@@ -23,10 +23,10 @@ const char* password = "99999999";
 //-----------------------------------------------------------------------------------------------------------
 
 // =====Informasi Firebase=====
-#define DATABASE_URL "https://iotesp32-c18ff-default-rtdb.firebaseio.com/" // Ganti dengan URL database Anda
+#define DATABASE_URL "https://iotesp32-c18ff-default-rtdb.firebaseio.com/" 
 //https://iotesp32-c18ff-default-rtdb.firebaseio.com/
 //https://esp32iot-peternakan-default-rtdb.firebaseio.com/
-#define API_KEY "AIzaSyDeQZz7zcUD110ATmzYb0FHne9UQiQW8fo" // Ganti dengan API Key atau token autentikasi Anda
+#define API_KEY "AIzaSyDeQZz7zcUD110ATmzYb0FHne9UQiQW8fo" 
 //t7ww2WnWbTxs6MwxCqUPFvNhAUaBTnEAzeG2go8l
 //AIzaSyAfvMikBKa9GlwB46nsz0HH21BGDlm3d_M
 //AIzaSyDeQZz7zcUD110ATmzYb0FHne9UQiQW8fo
@@ -202,9 +202,9 @@ Serial.println("Waktu NTP berhasil tersinkronisasi!");
   //  Serial.printf("%s\n", config.signer.signupError.message.c_str());
   //}
 
-  /* Assign the callback function for the long running token generation task */
+  
   Firebase.reconnectNetwork(true);
-  config.token_status_callback = tokenStatusCallback; //see addons/TokenHelper.h
+  config.token_status_callback = tokenStatusCallback; 
   
   //Firebase.begin(&config, &auth);
   Firebase.reconnectWiFi(true);
