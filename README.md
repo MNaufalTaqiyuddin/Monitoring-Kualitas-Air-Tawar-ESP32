@@ -11,7 +11,7 @@ Proyek ini merupakan sistem monitoring kualitas air tawar berbasis Embedded IoT 
 - **Programming Language:** C++ (Embedded), HTML/JS (Dashboard Web)
 - **Algorithm:** Fuzzy Logic Mamdani
 
-## 🚀 Fitur Utama
+## Fitur Utama
 1. **Multi-Sensor Data Acquisition:** Membaca parameter air secara konstan.
 2. **Fuzzy Logic Inference:** Mengolah multi-parameter untuk menentukan status kelayakan air.
 3. **Real-Time Cloud Sync:** Mengirim data sensor secara instan ke Firebase untuk ditampilkan di dashboard web.
