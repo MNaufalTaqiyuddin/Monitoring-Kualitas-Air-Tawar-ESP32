@@ -1,0 +1,245 @@
+/* ========== RESET & BASE STYLE ========== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", "Segoe UI", sans-serif;
+}
+
+body {
+  background: radial-gradient(circle at top left, #0a2342, #021024);
+  color: #e6f0ff;
+  min-height: 100vh;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ========== TITLE / HEADER ========== */
+h1 {
+  text-align: center;
+  font-size: 2.2rem;
+  color: #69a9ff;
+  margin-bottom: 25px;
+  letter-spacing: 1px;
+  text-shadow: 0 0 12px rgba(105, 169, 255, 0.6);
+}
+
+/* ========== CARD CONTAINER (DATA SENSOR) ========== */
+.data-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  width: 100%;
+  max-width: 1000px;
+  margin-bottom: 40px;
+}
+
+.data-container p {
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 18px 20px;
+  border-radius: 15px;
+  color: #eaf3ff;
+  font-weight: 500;
+  font-size: 1.05rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+}
+
+.data-container p:hover {
+  transform: translateY(-4px);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.25);
+}
+
+.data-container span {
+  font-size: 1.3rem;
+  color: #5dafff;
+  font-weight: 600;
+}
+
+/* ========== TABLE (TINGKAT SKALA) ========== */
+.skala-table {
+  width: 100%;
+  max-width: 926.4px;
+  margin: 30px auto;
+  border-collapse: collapse;
+  border-radius: 15px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.skala-table th, .skala-table td {
+  padding: 14px 16px;
+  text-align: center;
+  color: #eaf3ff;
+  font-size: 0.95rem;
+}
+
+.skala-table th {
+  background: rgba(0, 122, 255, 0.4);
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+.skala-table tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.skala-table tr:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* ========== CHART SECTION ========== */
+.chart-section {
+  width: 100%;
+  max-width: 926.4px;
+  margin: 50px auto;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  padding: 25px;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(8px);
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.chart-section:hover {
+  transform: translateY(-5px);
+}
+
+.chart-section h2 {
+  color: #69a9ff;
+  margin-bottom: 15px;
+  text-shadow: 0 0 8px rgba(105, 169, 255, 0.6);
+}
+
+#penilaianChart {
+  width: 100%;
+  height: 400px;
+}
+
+/* ========== RESPONSIVE DESIGN ========== */
+@media (max-width: 768px) {
+  body {
+    padding: 20px 10px;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+  }
+
+  .data-container {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-section {
+    padding: 18px;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.data-container p, .skala-table, .chart-section {
+  animation: fadeInUp 0.7s ease forwards;
+}
+
+/*KONDISI WARNA*/
+.green {
+  color: #00c853 !important;
+  font-weight: bold;
+}
+
+.blue {
+  color: #2962ff !important;
+  font-weight: bold;
+}
+
+.yellow {
+  color: #ffeb3b !important;
+  font-weight: bold;
+}
+
+.orange {
+  color: #ff9100 !important;
+  font-weight: bold;
+}
+
+.red {
+  color: #ff2b2b !important;
+  font-weight: bold;
+}
+
+/* ===== CHART CONTAINER ===== */
+.chart-container {
+  width: 100%;
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 25px;
+  background: rgba(0, 60, 120, 0.15);
+  border-radius: 18px;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 0 25px rgba(0, 90, 180, 0.2);
+  border: 1px solid rgba(0, 120, 220, 0.3);
+}
+
+/* Title */
+.chart-container h2 {
+  text-align: center;
+  margin-bottom: 15px;
+  color: #0A84FF;
+  font-weight: 600;
+}
+
+/* ===== MONTH NAVIGATION ===== */
+.month-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.month-nav button {
+  background: #0A84FF;
+  color: white;
+  padding: 8px 18px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.month-nav button:hover {
+  background: #0066CC;
+}
+
+#currentMonthLabel {
+  font-size: 16px;
+  font-weight: 600;
+  color: #0A84FF;
+}
+
+/* Canvas must scale automatically */
+canvas {
+  width: 100% !important;
+  height: auto !important;
+}

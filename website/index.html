@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Sensor Realtime</title>
+  <link rel="stylesheet" href="css.css"> 
+</head>
+<body>
+  <h1>Data Sensor Realtime</h1>
+
+  <!-- Tabel Tingkat Skala 
+<h2 style="text-align:center; margin-top: 40px; color: #ffffff;">Standar Tingkat Skala</h2>
+<h4 style="text-align:center; margin-top: 40px; color: #ffffff;">Berdasarkan Baku Mutu Kualitas Air PP NO. 22 tahun 2021 (kelas II)</h4> -->
+<table class="skala-table">
+  <thead>
+    <tr>
+      <th></th>
+      <th></th>
+      <th>STANDAR BATASAN</th>
+      <th></th>
+      <th></th>
+    </tr>
+    <tr>
+      <th></th>
+      <th>Amonia</th>
+      <th>Suhu</th>
+      <th>pH</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Aman</td>
+      <td>0.00 ppm - 0.02 ppm</td>
+      <td>25˚C - 31˚C</td>
+      <td>6.5 - 9.0</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Buruk</td>
+      <td>AMONIA ≥ 0.025 </td>
+      <td>24˚C ≤ SUHU atau SUHU ≥ 32˚C</td>
+      <td>6.4 ≤ pH atau pH ≥ 9.1 </td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+<table class="skala-table">
+  <thead>
+    <th></th>
+    <th></th>
+    <th>Indikator Warna</th>
+    <th></th>
+    <th></th>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="color:#00c853 ;">Sangat Aman</td>
+      <td style="color:#2962ff ;">Aman</td>
+      <td style="color:#ffeb3b ;">Sedang</td>
+      <td style="color:#ff9100 ;">Buruk</td>
+      <td style="color:#ff2b2b ;">Sangat Buruk</td>
+    </tr>
+  </tbody>
+</table>
+
+  <!-- Container utama untuk data -->
+  <div class="data-container">
+    <p><strong>Amoniak:</strong> <span id="amoniak">--</span></p>
+    <p><strong>pH:</strong> <span id="ph">--</span></p>
+    <p><strong>Suhu:</strong> <span id="suhu">--</span></p>
+    <p><strong>Prediksi Persentase Air yang dikuras:</strong> <span id="persen">--</span>%</p>
+    <p><strong>Kondisi Air:</strong> <span id="kondisi">--</span></p>
+    <p><strong>Penilaian Air:</strong> <span id="penilaian">--</span></p>
+    <p><strong>Tingkat Resiko:</strong> <span id="risk">--</span></p>
+  </div>
+
+<section class="chart-section">
+  <h2>Grafik Penilaian Air Harian</h2>
+  <canvas id="penilaianChart"></canvas>
+</section>
+
+<div class="chart-container">
+  <h2>Grafik Penilaian Bulanan (3 Bulan Terakhir)</h2>
+
+  <div class="month-nav">
+      <button id="prevMonth">◀ Bulan Sebelumnya</button>
+      <h2 id="currentMonth">Loading...</h2>
+      <button id="nextMonth">Bulan Berikutnya ▶</button>
+  </div>
+
+  <canvas id="chartBulanan"></canvas>
+</div>
+
+  <!-- Firebase Integration -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script type="module">
+    // Import Firebase SDKs
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+    import { getDatabase, ref, onValue, set, get, remove } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+
+    // Konfigurasi Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyAfvMikBKa9GlwB46nsz0HH21BGDlm3d_M",
+      authDomain: "iotesp32-c18ff.firebaseapp.com",
+      databaseURL: "https://iotesp32-c18ff-default-rtdb.firebaseio.com",
+      projectId: "iotesp32-c18ff",
+      storageBucket: "iotesp32-c18ff.appspot.com",
+      messagingSenderId: "413835952176",
+      appId: "1:413835952176:web:0f8739c8b7f5e8bdb92df5",
+      measurementId: "G-GQ6G1CLMZH"
+    };
+
+    // Inisialisasi Firebase
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    const sensorRef = ref(database, "sensor");
+    const chartRef = ref(database, "chart/harian");
+
+    // Ambil elemen HTML
+    const amoniakElement = document.getElementById("amoniak");
+    const phElement = document.getElementById("ph");
+    const suhuElement = document.getElementById("suhu");
+    const persenElement = document.getElementById("persen");
+    const kondisiElement = document.getElementById("kondisi");
+    const penilaianElement = document.getElementById("penilaian");
+    const riskElement = document.getElementById("risk");
+
+
+  //FUNCTION PERUBAHANN WARNA
+  function getColorClassAmoniak(value) {
+  if (value >= 0 && value <= 0.015) return "green";
+  if (value >= 0.016 && value <= 0.020) return "blue";
+  if (value >= 0.021 && value <= 0.025) return "yellow";
+  if (value >= 0.026 && value <= 0.034) return "orange";
+  if (value > 0.035) return "red";
+  return "";
+}
+
+function getColorClassPH(value) {
+  if (value >= 6 && value <= 8.5) return "green";
+  if (value >= 4.5 && value < 6) return "orange";
+  if (value > 8.5 && value <= 9.5) return "orange";
+  if (value < 4.5 || value > 9.5) return "red";
+  return "";
+}
+
+function getColorClassSuhu(value) {
+  if (value >= 24 && value <= 31) return "green";
+  if (value >= 21 && value < 24) return "orange";
+  if (value > 31 && value <= 35) return "orange";
+  if (value < 21 || value > 35) return "red";
+  return "";
+}
+
+function getColorClassPersen(value) {
+  if (value === 0) return "green";
+  if (value === 15) return "blue";
+  if (value === 30) return "yellow";
+  if (value === 50) return "orange";
+  if (value >= 70) return "red";
+  return "";
+}
+
+function getColorClassKondisi(text) {
+  if (text === "SANGAT AMAN") return "green";
+  if (text === "AMAN") return "blue";
+  if (text === "SEDANG") return "yellow";
+  if (text === "BURUK") return "orange";
+  if (text === "SANGAT BURUK") return "red";
+  return "";
+}
+
+function getColorClassPenilaian(value) {
+  if (value > 85) return "green";
+  if (value >= 70 && value <= 84) return "blue";
+  if (value >= 50 && value <= 69) return "yellow";
+  if (value >= 30 && value <= 49) return "orange";
+  if (value < 30) return "red";
+  return "";
+}
+
+function getColorClassRisk(value) {
+  if (value < 15) return "green";
+  if (value >= 15 && value <= 30) return "blue";
+  if (value >= 31 && value <= 50) return "yellow";
+  if (value >= 51 && value <= 70) return "orange";
+  if (value > 70) return "red";
+  return "";
+}
+
+
+    // Perubahan data secara realtime
+    onValue(sensorRef, (snapshot) => {
+  const data = snapshot.val();
+  if (!data) return;
+
+  // Set text
+  amoniakElement.textContent = data.amoniak ?? "--";
+  phElement.textContent = data.ph ?? "--";
+  suhuElement.textContent = data.suhu ?? "--";
+  persenElement.textContent = data.persen ?? "--";
+  kondisiElement.textContent = data.kondisi ?? "--";
+  penilaianElement.textContent = data.penilaian ?? "--";
+  riskElement.textContent = data.risk ?? "--";
+  
+
+  // Hapus semua kelas warna dulu
+  amoniakElement.className = "";
+  phElement.className = "";
+  suhuElement.className = "";
+  persenElement.className = "";
+  kondisiElement.className = "";
+  penilaianElement.className = "";
+  riskElement.className = "";
+
+  // Tambahkan warna sesuai aturan
+  amoniakElement.classList.add(getColorClassAmoniak(Number(data.amoniak)));
+  phElement.classList.add(getColorClassPH(Number(data.ph)));
+  suhuElement.classList.add(getColorClassSuhu(Number(data.suhu)));
+  persenElement.classList.add(getColorClassPersen(Number(data.persen)));
+  kondisiElement.classList.add(getColorClassKondisi(String(data.kondisi)));
+  penilaianElement.classList.add(getColorClassPenilaian(Number(data.penilaian)));
+  riskElement.classList.add(getColorClassRisk(Number(data.risk)));
+});
+
+
+    
+
+  //tampilkan chart
+  let chartInstance = null;
+
+function tampilkanChart(data) {
+  const ctx = document.getElementById("penilaianChart").getContext("2d");
+
+  const tanggal = Object.values(data).map(item => item.tanggal);
+  const nilai = Object.values(data).map(item => item.penilaian);
+
+  if (chartInstance) chartInstance.destroy();
+
+  chartInstance = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: tanggal,
+      datasets: [{
+        label: "Penilaian Air Harian",
+        data: nilai,
+        backgroundColor: "rgba(0,123,255,0.5)",
+        borderColor: "#007bff",
+        borderWidth: 2
+      }]
+    },
+    options: {
+      scales: {
+        y: { beginAtZero: true, title: { display: true, text: "Penilaian" }},
+        x: { title: { display: true, text: "Tanggal" }}
+      }
+    }
+  });
+}
+
+// Listen perubahan data chart
+onValue(chartRef, (snapshot) => {
+  if (!snapshot.exists()) return;
+
+  const data = snapshot.val();
+
+  // Ambil hanya 10 data terakhir (ESP32 sudah delete)
+  const keys = Object.keys(data).sort();
+  const last10 = keys.slice(-15);
+
+  let trimmed = {};
+  last10.forEach(k => trimmed[k] = data[k]);
+
+  tampilkanChart(trimmed);
+});
+
+// CHART GARIS
+// ================= VARIABEL GLOBAL ==================
+let monthlyDataCache = {};
+let allMonthsSorted = [];
+let currentMonthIndex = 0;
+let chartBulanan;
+
+// ================= AMBIL DATA BULANAN ==================
+async function fetchMonthlyData() {
+    const pathRef = ref(database, "chart_bulanan");
+    const snapshot = await get(pathRef);
+
+    console.log("DATA FIREBASE:", snapshot.val());
+
+    if (!snapshot.exists()) {
+        console.error("Tidak ada data chart_bulanan");
+        return;
+    }
+
+    monthlyDataCache = snapshot.val();
+    allMonthsSorted = Object.keys(monthlyDataCache).sort();   // sort ascending
+    if (allMonthsSorted.length > 3) {
+  allMonthsSorted = allMonthsSorted.slice(-3);
+}
+    currentMonthIndex = allMonthsSorted.length - 1;           // ke bulan terbaru
+
+    loadThisMonth();
+}
+
+// ================= LOAD BULAN ==================
+function loadThisMonth() {
+    const bulan = allMonthsSorted[currentMonthIndex];
+    document.getElementById("currentMonth").innerText = bulan;
+
+    let tanggalList = Object.keys(monthlyDataCache[bulan] || {});
+    tanggalList.sort();
+
+    let labels = [];
+    let values = [];
+
+    tanggalList.forEach(tanggal => {
+        labels.push(tanggal);
+        values.push(monthlyDataCache[bulan][tanggal].penilaian || 0);
+    });
+
+    drawChart(labels, values);
+}
+
+// ================= RENDER CHART ==================
+function drawChart(labels, values) {
+    const ctx = document.getElementById("chartBulanan").getContext("2d");
+    const monthColors = [
+      "#4CAF50", // hijau
+      "#2196F3", // biru
+      "#FF9800"  // oren
+    ];
+    if (chartBulanan) chartBulanan.destroy();
+
+    chartBulanan = new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: labels,
+            datasets: [{
+            label: "Penilaian Bulan " + document.getElementById("currentMonth").innerText,
+            data: values,
+            borderColor: monthColors[currentMonthIndex % monthColors.length],
+            backgroundColor: "rgba(0,0,0,0)",
+            borderWidth: 3,
+            tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            animation: { duration: 800 },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+}
+
+// ================= NAVIGASI ==================
+document.getElementById("prevMonth").onclick = () => {
+    if (currentMonthIndex > 0) {
+        currentMonthIndex--;
+        loadThisMonth();
+    }
+};
+
+document.getElementById("nextMonth").onclick = () => {
+    if (currentMonthIndex < allMonthsSorted.length - 1) {
+        currentMonthIndex++;
+        loadThisMonth();
+    }
+};
+
+// ================= MULAI ==================
+window.onload = () => {
+    fetchMonthlyData();
+};
+  </script>
+</body>
+</html>
