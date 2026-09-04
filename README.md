@@ -15,3 +15,8 @@ Proyek ini merupakan sistem monitoring kualitas air tawar berbasis Embedded IoT 
 1. **Multi-Sensor Data Acquisition:** Membaca parameter air secara konstan.
 2. **Fuzzy Logic Inference:** Mengolah multi-parameter untuk menentukan status kelayakan air.
 3. **Real-Time Cloud Sync:** Mengirim data sensor secara instan ke Firebase untuk ditampilkan di dashboard web.
+
+## Dokumentasi
+<img width="814" height="556" alt="image" src="https://github.com/user-attachments/assets/59c4866e-07f1-4096-a2e5-ce108840f44a" />
+<img width="827" height="581" alt="image (1)" src="https://github.com/user-attachments/assets/5fb804da-0637-4301-8e27-9f74363c19f9" />
+<img width="814" height="404" alt="image (2)" src="https://github.com/user-attachments/assets/07a1b56e-eb79-4097-8c69-e375fd1f42f4" />
